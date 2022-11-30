@@ -1,0 +1,7 @@
+amazon-linux-extras list | grep nginx
+amazon-linux-extras enable nginx1
+yum clean metadata
+yum -y install nginx
+nginx -v
+service nginx start
+/usr/share/nginx/html/index.html
