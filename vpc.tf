@@ -23,7 +23,8 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "public_subnets" {
   
   vpc_id = "${aws_vpc.green.id}"
-  count = 3
+  #count = 3
+   count = "${length(var.public-subnets)}"
   cidr_block = "${element(var.public-subnets,count.index)}"
   availability_zone = "${element(var.azs,count.index)}"
 
@@ -37,7 +38,7 @@ resource "aws_subnet" "public_subnets" {
 resource "aws_subnet" "private_subnets" {
   
   vpc_id = "${aws_vpc.green.id}"
-  count = 3
+  count = "${length(var.private-subnets)}"
   cidr_block = "${element(var.private-subnets,count.index)}"
   availability_zone = "${element(var.azs,count.index)}"
 
@@ -89,14 +90,14 @@ resource "aws_route_table" "terraform-private" {
 # route association
 
 resource "aws_route_table_association" "terraform-associate-route" {
-  count = 3
+  count = "${length(var.public-subnets)}"
   subnet_id = "${element(aws_subnet.public_subnets.*.id,count.index)}"
   route_table_id = "${aws_route_table.terraform-public.id}"
 
 }
 
 resource "aws_route_table_association" "terraform-associate-private-route" {
-  count = 3
+  count = "${length(var.private-subnets)}"
   subnet_id = "${element(aws_subnet.private_subnets.*.id,count.index)}"
   route_table_id = "${aws_route_table.terraform-private.id}"
 
