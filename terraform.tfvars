@@ -9,7 +9,7 @@ security-grp-name = "green-vpc-allow-all"
 privateroute-name = "green-private-route"
 vm-type = "t2.micro"
 region = "us-east-1"
-env = "dev"
+env = "prod"
 # amis = {
 #       description = "amis by region"
 
