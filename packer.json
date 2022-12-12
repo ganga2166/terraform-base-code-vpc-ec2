@@ -1,0 +1,42 @@
+{
+    "_comment": "Create a AWS AMI ith AMZ Linux 2018 ",
+    
+    "_comment1": "packer build -var \"aws_secret_key=foo\" template.json",
+    "_comment2": "packer build -var-file packer-vars.json template.json",
+    "builders": [
+        {
+            "access_key": "AKIAVZIODCZZDXYJD24L",
+            "secret_key": "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",
+            "type": "amazon-ebs",
+            "region": "us-east-1",
+            "source_ami": "ami-0b0dcb5067f052a63",
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "DevOps-Build-{{isotime | clean_resource_name}}",
+            "vpc_id": "vpc-07fd6d8cc71e6ce8b",
+            "subnet_id": "subnet-0f0c247d6d440df07",
+            
+              
+            "tags": {
+                "Name": "DevOps-Build-{{isotime | clean_resource_name}}"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                
+                "sleep 30",
+                "sudo amazon-linux-extras list | grep nginx",
+                "sudo amazon-linux-extras enable nginx1",
+                "sudo yum clean metadata",
+                "sudo yum -y install nginx",
+                "sudo nginx -v",
+                "sudo service nginx start",
+                "sudo systemctl enable nginx"
+            ]
+        }
+        
+    ]
+}

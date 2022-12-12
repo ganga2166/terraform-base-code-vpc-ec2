@@ -1,7 +1,7 @@
 # creating vpc
 
 resource "aws_vpc" "green" {
-  cidr_block = "${var.cidr_block}"
+  cidr_block           = var.cidr_block
   enable_dns_hostnames = true
 
   tags = {
@@ -11,7 +11,7 @@ resource "aws_vpc" "green" {
 
 # internet gateway
 resource "aws_internet_gateway" "igw" {
-  vpc_id = "${aws_vpc.green.id}"
+  vpc_id = aws_vpc.green.id
 
   tags = {
     Name = "${var.aws_internet_gateway}"
@@ -21,12 +21,12 @@ resource "aws_internet_gateway" "igw" {
 # subnets
 
 resource "aws_subnet" "public_subnets" {
-  
-  vpc_id = "${aws_vpc.green.id}"
+
+  vpc_id = aws_vpc.green.id
   #count = 3
-   count = "${length(var.public-subnets)}"
-  cidr_block = "${element(var.public-subnets,count.index)}"
-  availability_zone = "${element(var.azs,count.index)}"
+  count             = length(var.public-subnets)
+  cidr_block        = element(var.public-subnets, count.index)
+  availability_zone = element(var.azs, count.index)
 
   tags = {
     "Name" = "public_subnet-${count.index}"
@@ -36,11 +36,11 @@ resource "aws_subnet" "public_subnets" {
 
 
 resource "aws_subnet" "private_subnets" {
-  
-  vpc_id = "${aws_vpc.green.id}"
-  count = "${length(var.private-subnets)}"
-  cidr_block = "${element(var.private-subnets,count.index)}"
-  availability_zone = "${element(var.azs,count.index)}"
+
+  vpc_id            = aws_vpc.green.id
+  count             = length(var.private-subnets)
+  cidr_block        = element(var.private-subnets, count.index)
+  availability_zone = element(var.azs, count.index)
 
   tags = {
     "Name" = "private_subnet-${count.index}"
@@ -60,28 +60,28 @@ resource "aws_subnet" "private_subnets" {
 # route table
 
 resource "aws_route_table" "terraform-public" {
-  vpc_id = "${aws_vpc.green.id}"
-  
-  route  {
-    cidr_block = "0.0.0.0/16"
-    gateway_id = "${aws_internet_gateway.igw.id}"
-  }  
+  vpc_id = aws_vpc.green.id
 
-    tags = {
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  tags = {
     Name = "${var.route-name}"
   }
-  
+
 }
 
 
 resource "aws_route_table" "terraform-private" {
-  vpc_id = "${aws_vpc.green.id}"
-  
+  vpc_id = aws_vpc.green.id
 
-    tags = {
+
+  tags = {
     Name = "${var.privateroute-name}"
   }
-  
+
 }
 
 
@@ -90,16 +90,16 @@ resource "aws_route_table" "terraform-private" {
 # route association
 
 resource "aws_route_table_association" "terraform-associate-route" {
-  count = "${length(var.public-subnets)}"
-  subnet_id = "${element(aws_subnet.public_subnets.*.id,count.index)}"
-  route_table_id = "${aws_route_table.terraform-public.id}"
+  count          = length(var.public-subnets)
+  subnet_id      = element(aws_subnet.public_subnets.*.id, count.index)
+  route_table_id = aws_route_table.terraform-public.id
 
 }
 
 resource "aws_route_table_association" "terraform-associate-private-route" {
-  count = "${length(var.private-subnets)}"
-  subnet_id = "${element(aws_subnet.private_subnets.*.id,count.index)}"
-  route_table_id = "${aws_route_table.terraform-private.id}"
+  count          = length(var.private-subnets)
+  subnet_id      = element(aws_subnet.private_subnets.*.id, count.index)
+  route_table_id = aws_route_table.terraform-private.id
 
 }
 
@@ -109,29 +109,29 @@ resource "aws_route_table_association" "terraform-associate-private-route" {
 # security groups
 
 resource "aws_security_group" "allow-all" {
-  name = "allow-all"
+  name        = "allow-all"
   description = "Allow all inbound rules"
-  vpc_id = "${aws_vpc.green.id}"
+  vpc_id      = aws_vpc.green.id
 
-ingress {
-  from_port   = 0
+  ingress {
+    from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-}
+  }
 
-egress {
-  from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
-}
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-tags = {
+  tags = {
 
-Name = "${var.security-grp-name}"
+    Name = "${var.security-grp-name}"
 
-}
+  }
 
 
 }
