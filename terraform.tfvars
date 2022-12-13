@@ -1,5 +1,5 @@
-access_key = "AKIAVZIODCZZDXYJD24L"
-secret_key = "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"
+access_key = "xxxxccc"
+secret_key = "xxxxxxxx"
 cidr_block = "10.0.0.0/16"
 aws_internet_gateway = "green_igw"
 # public_subnet-1 = "10.0.4.0/24"
