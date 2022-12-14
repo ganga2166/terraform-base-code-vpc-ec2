@@ -5,8 +5,8 @@
     "_comment2": "packer build -var-file packer-vars.json template.json",
     "builders": [
         {
-            "access_key": "AKIAVZIODCZZGTFZNSFR",
-            "secret_key": "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",
+            "access_key": "xxxxxx",
+            "secret_key": "xxxxxxx",
             "type": "amazon-ebs",
             "region": "us-east-1",
             "source_ami": "ami-0b0dcb5067f052a63",
